@@ -1,19 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Simple Store</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Store</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>My Store</h1>
-    <input type="text" id="search" placeholder="Search products...">
-  </header>
+    <header>
+        <div class="nav-left">
+            <img src="IMG-20251217-MYLOGO.jpg" alt="Logo" id="navLogo">
+            <span style="font-weight: bold; margin-left: 10px;">My Store</span>
+        </div>
 
-  <main id="product-list"></main>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search products..." onkeyup="filterProducts()">
+        </div>
 
-  <footer>© 2025 My Store</footer>
+        <div class="nav-right">
+            <button id="cartBtn">Cart (0)</button>
+            <span class="logout-link" onclick="logout()" style="cursor:pointer; margin-left: 15px;">Logout 🚪</span>
+        </div>
+    </header>
 
-  <script src="script.js"></script>
+    <main>
+        <div id="productGrid" class="product-grid">
+            </div>
+    </main>
+
+    <div id="cartModal" class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Your Shopping Cart</h3>
+            <button onclick="toggleCart()" class="close-cart">×</button>
+        </div>
+        <div id="cartItems"></div>
+        <div class="cart-footer">
+            <p>Total: ₹<span id="totalPrice">0</span></p>
+            <button onclick="checkout()" class="checkout-btn">Checkout on WhatsApp</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>About Our Store</h4>
+                <p>High-quality products delivered to your doorstep.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Details</h4>
+                <p>📧 <strong>Email:</strong> pankajmaurya7877@zohomail.in</p>
+                <p>📞 <strong>Contact No:</strong> +91 7045585298</p>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 My Store. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
