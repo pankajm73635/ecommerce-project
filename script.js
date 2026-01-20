@@ -1,8 +1,9 @@
-// --- 1. SECURITY CHECK (सबसे ऊपर) ---
-// यह कोड चेक करेगा कि यूजर ने लॉगिन किया है या नहीं
+// --- 1. SECURITY CHECK ---
 if (localStorage.getItem("userLoggedIn") !== "true") {
-    // अगर लॉगिन नहीं है, तो तुरंत login.html पर भेज देगा
-    window.location.href = "login.html";
+    // अगर लॉगिन नहीं है और यूजर स्टोर पेज पर है, तो लॉगिन पेज पर भेजें
+    if (!window.location.pathname.includes("login.html")) {
+        window.location.href = "login.html";
+    }
 }
 
 // --- 2. PRODUCT DATA ---
@@ -17,8 +18,8 @@ let cart = [];
 // --- 3. DISPLAY PRODUCTS ---
 function renderProducts(items) {
     const grid = document.getElementById('productGrid');
-    if(!grid) return; // अगर ग्रिड नहीं मिला तो कोड रुक जाएगा
-
+    if(!grid) return;
+    
     grid.innerHTML = items.map(p => `
         <div class="product-card">
             <img src="${p.img}" alt="${p.name}">
@@ -34,24 +35,51 @@ function addToCart(id) {
     const product = products.find(p => p.id === id);
     cart.push(product);
     updateCartUI();
+    alert(product.name + " added to cart!");
 }
 
 function updateCartUI() {
-    document.getElementById('cartBtn').innerText = `Cart (${cart.length})`;
+    const cartBtn = document.getElementById('cartBtn');
     const cartItems = document.getElementById('cartItems');
+    const totalPriceElement = document.getElementById('totalPrice');
+    
+    if(cartBtn) cartBtn.innerText = `Cart (${cart.length})`;
+    
+    if(cartItems) {
+        cartItems.innerHTML = cart.map((item, index) => `
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:5px;">
+                <span>${item.name}</span>
+                <span>₹${item.price}</span>
+            </div>
+        `).join('');
+    }
+    
     const total = cart.reduce((sum, item) => sum + item.price, 0);
-
-    cartItems.innerHTML = cart.map(item => `
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-            <span>${item.name}</span>
-            <span>₹${item.price}</span>
-        </div>
-    `).join('');
-
-    document.getElementById('totalPrice').innerText = total;
+    if(totalPriceElement) totalPriceElement.innerText = total;
 }
 
-// --- 5. SEARCH & LOGOUT & CART TOGGLE ---
+// --- 5. WHATSAPP CHECKOUT (Naya Feature) ---
+function checkout() {
+    if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+    }
+
+    const myNumber = "917045585298"; // आपका नंबर
+    let message = "Hello Pankaj! I want to order:%0A";
+    
+    cart.forEach((item, index) => {
+        message += `${index + 1}. ${item.name} - ₹${item.price}%0A`;
+    });
+    
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    message += `%0A*Total Amount: ₹${total}*`;
+
+    // WhatsApp API का उपयोग करके लिंक खोलना
+    window.open(`https://api.whatsapp.com/send?phone=${myNumber}&text=${message}`, '_blank');
+}
+
+// --- 6. UTILITIES ---
 function filterProducts() {
     const term = document.getElementById('searchInput').value.toLowerCase();
     const filtered = products.filter(p => p.name.toLowerCase().includes(term));
@@ -59,19 +87,20 @@ function filterProducts() {
 }
 
 function logout() {
-    // लॉगिन डेटा साफ़ करें और लॉगिन पेज पर भेजें
     localStorage.removeItem("userLoggedIn");
     window.location.href = "login.html";
 }
 
 function toggleCart() {
-    document.getElementById('cartModal').classList.toggle('cart-visible');
+    const modal = document.getElementById('cartModal');
+    if(modal) {
+        modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+    }
 }
 
-// --- 6. INITIALIZE ---
-document.getElementById('cartBtn').onclick = toggleCart;
-
-// जब पेज पूरी तरह लोड हो जाए
+// --- 7. INITIALIZE ---
 window.onload = () => {
     renderProducts(products);
+    const cartBtn = document.getElementById('cartBtn');
+    if(cartBtn) cartBtn.onclick = toggleCart;
 };
